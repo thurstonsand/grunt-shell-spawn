@@ -1,6 +1,6 @@
 # grunt-shell-spawn
 
-This is a fork on [sindresorhus][1]'s [grunt-shell][2] task adding a new task `spawn` that launches a command in background without waiting for it to finish.
+This is a fork on [sindresorhus][1]'s [grunt-shell][2] task to support asynchronous launching (in background).
 
 E.g.: start a `compass watch` in the background.
 
@@ -16,19 +16,26 @@ Run `compass watch`
 Simple task, no output, current directory:
 
 ```javascript
-spawn: {
-    command: 'compass',
-    args: ['watch'],
+shell: {
+    command: 'compass watch',
+    async: true
 }
 ```
 
 Multitask, advanced:
 
 ```javascript
-spawn: {
+shell: {
     compassWatch: {
-        command: 'compass',
-        args: ['watch'],
+        command: 'compass watch',
+        async: true,
+        execOptions: {
+            cwd: './src/www/'
+        }
+    },
+    coffeeCompile: {
+        command: 'coffee -b -c -o /out /src',
+        async: false,
         execOptions: {
             cwd: './src/www/'
         }

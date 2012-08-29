@@ -8,69 +8,61 @@
  * MIT License
  */
 module.exports = function( grunt ) {
-	'use strict';
+    'use strict';
 
-	var _ = grunt.utils._;
-	var log = grunt.log;
+    var _ = grunt.utils._;
+    var log = grunt.log;
 
-	grunt.registerMultiTask( 'shell', 'Run shell commands', function() {
-		var exec = require('child_process').exec;
-		var done = this.async();
-		var data = _.extend( [], grunt.config.get('shell')._options, this.data );
-		var dataOut = data.stdout;
-		var dataErr = data.stderr;
+    grunt.registerMultiTask( 'shell', 'Run shell commands', function() {
 
-		exec( data.command, data.execOptions, function( err, stdout, stderr ) {
-			if ( stdout ) {
-				if ( _.isFunction( dataOut ) ) {
-					dataOut( stdout );
-				} else if ( dataOut === true ) {
-					log.write( stdout );
-				}
-			}
+        var cp = require('child_process');
 
-			if ( err ) {
-				if ( _.isFunction( dataErr ) ) {
-					dataErr( stderr );
-				} else if ( data.failOnError === true ) {
-					grunt.fatal( err );
-				} else if ( dataErr === true ) {
-					log.error( err );
-				}
-			}
+        var data = _.extend( [], grunt.config.get('shell')._options, this.data );
+        var dataOut = data.stdout;
+        var dataErr = data.stderr;
+        var done = data.async ? function() {} : this.async();
+        var file, args, opts;
 
-			done();
-		});
-	});
+        if (process.platform === 'win32') {
+            file = 'cmd.exe';
+            args = ['/s', '/c', '"' + data.command + '"'];
+            // Make a shallow copy before patching so we don't clobber the user's
+            // options object.
+            opts = util._extend({}, data.execOptions);
+            opts.windowsVerbatimArguments = true;
+        } else {
+            file = '/bin/sh';
+            args = ['-c', data.command];
+            opts = data.execOptions
+        }
 
-	grunt.registerMultiTask( 'spawn', 'Spawn shell command', function() {
-		var exec = require('child_process').spawn;
-		var data = _.extend( [], grunt.config.get('spawn')._options, this.data );
-		var dataOut = data.stdout;
-		var dataErr = data.stderr;
-		
-		var cp = exec( data.command, data.args, data.execOptions);
+        var proc = cp.spawn( file, args, opts);
 
-		cp.stdout.on('data', function (data) {
-			if ( _.isFunction( dataOut ) ) {
-				dataOut( data );
-			} else if ( dataOut === true ) {
-				log.write( data.toString() );
-			}
-		});
+        proc.stdout.on('data', function (data) {
+            if ( _.isFunction( dataOut ) ) {
+                dataOut( data );
+            } else if ( dataOut === true ) {
+                log.write( data.toString() );
+            }
+        });
 
-		cp.stderr.on('data', function (data) {
-  			if ( _.isFunction( dataErr ) ) {
-				dataErr( data );
-			} else if ( data.failOnError === true ) {
-				grunt.fatal( data );
-			} else if ( dataErr === true ) {
-				log.error( data.toString() );
-			}
-		});
+        proc.stderr.on('data', function (data) {
+            if ( _.isFunction( dataErr ) ) {
+                dataErr( data );
+            } else if ( data.failOnError === true ) {
+                grunt.fatal( data );
+            } else if ( dataErr === true ) {
+                log.error( data.toString() );
+            }
+        });
 
-		cp.on('exit', function (code) {
-			console.log(data.command + ' exited with code ' + code);
-		});
-	});
+
+        proc.on('exit', function (code) {
+            if ( _.isFunction( data.callback ) )
+                data.callback.call(this);
+            done();
+        });
+
+    });
+
 };
