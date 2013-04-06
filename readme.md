@@ -6,7 +6,7 @@
 
 -----
 
-*This plugin requires grunt >= 0.4.x. For grunt 0.3.x, use version `0.2.1`.*
+*This plugin requires grunt >= 0.4.x. For grunt 0.3.x, use version `0.1.3`.*
 
 ### Install
 
