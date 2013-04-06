@@ -33,7 +33,7 @@
 		"url": "git://github.com/cri5ti/grunt-shell-spawn.git"
 	},
 	"dependencies": {
-		"grunt": "~0.4.0"
+		"grunt": ">=0.4.x"
 	},
 	"engines": {
 		"node": ">=0.6.0"
