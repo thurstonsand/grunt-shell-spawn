@@ -29,7 +29,7 @@ module.exports = function( grunt ) {
 
         if (process.platform === 'win32') {
             file = 'cmd.exe';
-            args = ['/s', '/c', '"' + data.command + '"'];
+            args = ['/s', '/c', '"' + data.command.replace(/\//g, '\\') + '"'];
             // Make a shallow copy before patching so we don't clobber the user's
             // options object.
             opts = _.clone({}, options.execOptions);

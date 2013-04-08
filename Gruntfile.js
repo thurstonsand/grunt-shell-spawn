@@ -8,18 +8,18 @@ module.exports = function( grunt ) {
 	grunt.initConfig({
 		shell: {
 			subfolder_ls: {
-  		  command: 'ls',
-        options: {
-				  stderr: false,
-				  failOnError: false,
-				  execOptions: {
-					  cwd: './tasks'
-				  }
-        }
+				command: 'ls',
+				options: {
+					stderr: false,
+					failOnError: false,
+					execOptions: {
+						cwd: './tasks'
+					}
+				}
 			},
 			options: {
 				stdout: log,
-        stderr: log
+				stderr: log
 			}
 		},
 		jshint: {
@@ -47,11 +47,11 @@ module.exports = function( grunt ) {
 		},
 		watch: {
 			files: '<%= jshint.hint.files.src %>'
-    }
+		}
 	});
 
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadTasks('tasks');
 
 	grunt.registerTask('default', ['jshint', 'shell']);
