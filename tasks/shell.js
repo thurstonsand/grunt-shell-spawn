@@ -26,15 +26,15 @@ module.exports = function( grunt ) {
 
         grunt.verbose.writeflags(options, 'Options');
 
+        opts = _.clone({}, options.execOptions);
+
         if (process.platform === 'win32') {
             file = 'cmd.exe';
             args = ['/s', '/c', data.command.replace(/\//g, '\\') ];
-            opts = _.clone({}, options.execOptions);
             opts.windowsVerbatimArguments = true;
         } else {
             file = '/bin/sh';
             args = ['-c', data.command];
-            opts = options.execOptions;
         }
 
         grunt.verbose.writeln('Command: ' + file);
