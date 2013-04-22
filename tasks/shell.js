@@ -14,11 +14,11 @@ module.exports = function( grunt ) {
 
         var cp = require('child_process');
 
-        var options = this.options({
+        var options = _.extend({
             stdout: true,
             stderr: true,
             failOnError: true
-        });
+        }, grunt.config.get('shell')._options, this.data.options);
 
         var data = this.data;
         var done = options.async ? function() {} : this.async();
@@ -40,18 +40,26 @@ module.exports = function( grunt ) {
         grunt.verbose.writeln('Command: ' + file);
         grunt.verbose.writeflags(args, 'Args');
 
-        opts.stdio = [process.stdin, null, null];
-
-        if (options.stdout || grunt.options('verbose'))
-            opts.stdio[1] = process.stdout;
-
-        if (options.stderr || grunt.options('verbose'))
-            opts.stdio[2] = process.stderr;
-
         // spawn
         var proc = cp.spawn(file, args, opts );
 
-        
+        proc.stdout.on('data', function(data) {
+          if( _.isFunction( options.stdout ) ) {
+            options.stdout(data);
+          } else if(options.stdout === true || grunt.option('verbose')) {
+            log.write(data);
+          }
+        });
+
+        proc.stderr.on('data', function(data) {
+          if( _.isFunction( options.stderr ) ) {
+            options.stderr(data);
+          } else if(options.stderr === true || grunt.option('verbose')) {
+            log.error(data);
+          }
+        });
+
+
         proc.on('close', function (code) {
             if ( _.isFunction( options.callback ) ) {
                 options.callback.call(this);
