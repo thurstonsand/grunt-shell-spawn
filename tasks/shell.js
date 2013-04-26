@@ -14,11 +14,7 @@ module.exports = function( grunt ) {
 
         var cp = require('child_process');
 
-        var options = _.extend({
-            stdout: true,
-            stderr: true,
-            failOnError: true
-        }, grunt.config.get('shell')._options, this.data.options);
+        var options = this.options({stdout: true, stderr: true, failOnError: true});
 
         var data = this.data;
         var done = options.async ? function() {} : this.async();
