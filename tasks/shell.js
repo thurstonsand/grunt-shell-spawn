@@ -69,7 +69,7 @@ module.exports = function( grunt ) {
             if (stdBuffering) {
                 stdErrPos += stdErrBuf.write(data, stdErrPos);
             }
-            
+
             if( _.isFunction( options.stderr ) ) {
                 options.stderr(data);
             } else if(options.stderr === true || grunt.option('verbose')) {
@@ -86,8 +86,10 @@ module.exports = function( grunt ) {
                 options.callback.call(this, code, stdOutString, stdErrString, done);
             } else if ( 0 !== code && options.failOnError ){
                 grunt.warn("Done, with errors.");
+                done();
+            } else {
+                done();
             }
-            done();
         });
 
     });
