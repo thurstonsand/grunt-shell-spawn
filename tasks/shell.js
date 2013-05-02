@@ -36,51 +36,56 @@ module.exports = function( grunt ) {
         grunt.verbose.writeln('Command: ' + file);
         grunt.verbose.writeflags(args, 'Args');
 
-        // spawn
-        var BUFF_LENGTH = 200*1024;
+        var BUFF_LENGTH = 200*1024,
+            stdOutPos = 0, 
+            stdErrPos = 0,
+            stdOutBuf, stdErrBuf;
 
-        var proc = cp.spawn(file, args, opts ),
-            error = null,
-            stdOutBuf = new Buffer(BUFF_LENGTH),
-            stdErrBuf = new Buffer(BUFF_LENGTH),
-            stdOutPos = 0,
-            stdErrPos = 0;
+        var stdBuffering = _.isFunction( options.callback );
 
+        if (stdBuffering) {
+            stdOutBuf = new Buffer(BUFF_LENGTH);
+            stdErrBuf = new Buffer(BUFF_LENGTH);
+        }
+         
+        var proc = cp.spawn(file, args, opts );
 
         proc.stdout.setEncoding('utf8');
         proc.stderr.setEncoding('utf8');
 
-        proc.on('error', function(err) {
-          error = err;
-        });
-
         proc.stdout.on('data', function(data) {
-          stdOutPos += stdOutBuf.write(data, stdOutPos);
-          if( _.isFunction( options.stdout ) ) {
-            options.stdout(data);
-          } else if(options.stdout === true || grunt.option('verbose')) {
-            log.write(data);
-          }
+            if (stdBuffering) {
+                stdOutPos += stdOutBuf.write(data, stdOutPos);
+            }
+
+            if( _.isFunction( options.stdout ) ) {
+                options.stdout(data);
+            } else if(options.stdout === true || grunt.option('verbose')) {
+                log.write(data);
+            }
         });
 
         proc.stderr.on('data', function(data) {
-          stdErrPos += stdErrBuf.write(data, stdErrPos);
-          if( _.isFunction( options.stderr ) ) {
-            options.stderr(data);
-          } else if(options.stderr === true || grunt.option('verbose')) {
-            log.error(data);
-          }
+            if (stdBuffering) {
+                stdErrPos += stdErrBuf.write(data, stdErrPos);
+            }
+            
+            if( _.isFunction( options.stderr ) ) {
+                options.stderr(data);
+            } else if(options.stderr === true || grunt.option('verbose')) {
+                log.error(data);
+            }
         });
 
 
         proc.on('close', function (code) {
             if ( _.isFunction( options.callback ) ) {
-              var stdOutString = stdOutBuf.toString('utf8', 0, stdOutPos),
-                  stdErrString = stdOutBuf.toString('utf8', 0, stdErrPos);
+                var stdOutString = stdOutBuf.toString('utf8', 0, stdOutPos),
+                    stdErrString = stdOutBuf.toString('utf8', 0, stdErrPos);
 
-              options.callback.call(this, error, stdOutString, stdErrString, done);
+                options.callback.call(this, code, stdOutString, stdErrString, done);
             } else if ( 0 !== code && options.failOnError ){
-              grunt.warn("Done, with errors.");
+                grunt.warn("Done, with errors.");
             }
             done();
         });
