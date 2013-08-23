@@ -30,7 +30,7 @@ module.exports = function( grunt ) {
         // Tests to see if user is trying to kill a running process
     
 
-        var shouldKill = options.kill && this.args.length === 1 && this.args.pop() === 'kill';
+        var shouldKill = options.kill && this.args.length === 1 && this.args[0] === 'kill';
         if (shouldKill) {
             proc = procs[this.target];
             if (!proc) {
