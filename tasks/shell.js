@@ -17,7 +17,7 @@ module.exports = function( grunt ) {
         var cp = require('child_process');
         var proc;
 
-        var options = this.options({stdout: true, stderr: true, failOnError: true, kill: true});
+        var options = this.options({stdout: true, stderr: true, failOnError: true, canKill: true});
 
         var data = this.data;
         var done = options.async ? function() {} : this.async();
@@ -30,13 +30,13 @@ module.exports = function( grunt ) {
         // Tests to see if user is trying to kill a running process
     
 
-        var shouldKill = options.kill && this.args.length === 1 && this.args[0] === 'kill';
+        var shouldKill = options.canKill && this.args.length === 1 && this.args[0] === 'kill';
         if (shouldKill) {
             proc = procs[this.target];
             if (!proc) {
                 grunt.fatal('No running process for target:' + this.target);
             }
-            grunt.verbose.writeln('Killing process for target: ' + this.target);
+            grunt.verbose.writeln('Killing process for target: ' + this.target + ' (pid = ' + proc.pid + ')');
             proc.kill('SIGKILL');
             delete procs[this.target];
             done();
@@ -71,9 +71,9 @@ module.exports = function( grunt ) {
         proc = cp.spawn(file, args, opts );
 
         // Store proc to be killed!
-        if (options.kill) {
+        if (options.canKill) {
             if (procs[this.target]) {
-                grunt.fatal('Process already exists for target:' + this.target);
+                grunt.fatal('Process :' + this.target + ' already started.');
             }
             procs[this.target] = proc;
         }

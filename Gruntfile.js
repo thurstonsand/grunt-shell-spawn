@@ -69,8 +69,7 @@ module.exports = function(grunt) {
             neverEndingTask: {
                 command: 'node tests/server/server.js',
                 options: {
-                    async: true,
-                    kill: true
+                    async: true
                 }
             },
 
