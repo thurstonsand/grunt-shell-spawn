@@ -32,6 +32,10 @@ module.exports = function( grunt ) {
 
         var shouldKill = options.canKill && this.args.length === 1 && this.args[0] === 'kill';
         if (shouldKill) {
+            if (process.platform === 'win32') {
+                grunt.warn(":kill doesn't work as expected on Windows.");
+            }
+
             proc = procs[this.target];
             if (!proc) {
                 grunt.fatal('No running process for target:' + this.target);

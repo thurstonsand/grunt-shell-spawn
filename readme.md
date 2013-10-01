@@ -81,6 +81,8 @@ Works in synchronous or asynchronous mode.
 
 #### Killing an async process
 
+<font color=red>*(Not available on Windows.)*</font>
+
 Stop a running async task with the `:kill` task argument. 
 
 ```
