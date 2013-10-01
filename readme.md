@@ -16,7 +16,7 @@ Once the plugin has been installed, it may be enabled inside your Gruntfile with
 
     grunt.loadNpmTasks('grunt-shell-spawn');
 
-### Example usage
+### Examples
 
 #### Simple task:
 
@@ -79,8 +79,30 @@ Works in synchronous or asynchronous mode.
     }, 
 ```
 
+#### Killing an async process
 
+Stop a running async task with the `:kill` task argument. 
 
+```
+    server: {
+        command: 'redis-server',
+        options: {
+            async: true,
+        }
+    },
+```
+
+> `grunt shell:server shell:somethingElse shell:server:kill`
+
+The process will be killed with a SIGKILL.
+ 
+Please note that the processes are spawned with [child_process.spawn][cp_spawn], and by default an async process will be terminated when grunt finishes. This means it is not required to use `:kill` to clean up processes after your task completes.
+
+If you want a process to be kept running after grunt completes, you can pass the `detached: true` in execOptions:
+
+    options: {
+        execOptions: { detached: true }
+    }
 
 
 ## License
@@ -92,3 +114,4 @@ MIT License
 [1]: https://github.com/sindresorhus
 [2]: https://github.com/sindresorhus/grunt-shell
 
+[cp_spawn]: http://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options

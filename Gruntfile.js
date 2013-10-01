@@ -75,7 +75,7 @@ module.exports = function(grunt) {
             },
 
             curl: {
-                command: 'curl http://localhost:1337',
+                command: 'curl localhost:1337',
                 options: {
                     async: false,
                     stdout: function(msg) {
