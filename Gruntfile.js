@@ -83,7 +83,11 @@ module.exports = function(grunt) {
                         }
                     }
                 }
-            }
+            },
+
+            echo: {
+                command: 'echo beep',
+            },
         },
 
         nodeunit: {
@@ -102,4 +106,6 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('killTask', ['shell:neverEndingTask', 'shell:curl', 'shell:neverEndingTask:kill']);
+
+    grunt.registerTask('repeat', ['shell:echo', 'shell:echo']);
 };
