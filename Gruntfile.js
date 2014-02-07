@@ -102,7 +102,12 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
 
     grunt.registerTask('wait', function() {
-        this.async();
+        var done = this.async();
+        var seconds = parseInt(this.args[0], 10);
+        if (isNaN(seconds)) { seconds = 1; }
+        setTimeout(function () {
+            done(true);
+        }, 1000 * seconds);
     });
 
     grunt.registerTask('killTask', ['shell:neverEndingTask', 'shell:curl', 'shell:neverEndingTask:kill']);
