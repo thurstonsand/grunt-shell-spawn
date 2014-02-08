@@ -115,7 +115,7 @@ module.exports = function( grunt ) {
             delete procs[target];
             if ( _.isFunction( options.callback ) ) {
                 var stdOutString = stdOutBuf.toString('utf8', 0, stdOutPos),
-                    stdErrString = stdOutBuf.toString('utf8', 0, stdErrPos);
+                    stdErrString = stdErrBuf.toString('utf8', 0, stdErrPos);
 
                 options.callback.call(this, code, stdOutString, stdErrString, done);
             } else if ( 0 !== code && options.failOnError ){

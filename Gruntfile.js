@@ -66,6 +66,28 @@ module.exports = function(grunt) {
                 }
             },
 
+            testProcessSync: {
+                command: 'node tests/process/process.js',
+                options: {
+                    async: false,
+                    callback: function (code, out, err, cb) {
+                        validateTestProcessOutput(code, out, err);
+                        cb();
+                    }
+                }
+            },
+
+            testProcessAsync: {
+                command: 'node tests/process/process.js',
+                options: {
+                    async: true,
+                    callback: function (code, out, err, cb) {
+                        validateTestProcessOutput(code, out, err);
+                        cb();
+                    }
+                }
+            },
+
             neverEndingTask: {
                 command: 'node tests/server/server.js',
                 options: {
@@ -96,6 +118,25 @@ module.exports = function(grunt) {
 
     });
 
+    function validateTestProcessOutput(code, out, err) {
+        // Validates expected stdout, stderr, and exit code of the test process at
+        // tests/process/process.js. If any of them fail, print an error message in stderr (so that
+        // the error can be seen when running tests - the grunt.fatal message does not get emitted),
+        // and stop grunt.
+        if (out !== 'This should appear in stdout\n') {
+            console.error('stdout did not match. Got:"' + out + '"');
+            grunt.fatal('stdout did not match');
+        }
+        if (err !== 'This should appear in stderr\n') {
+            console.error('stderr did not match. Got:"' + err + '"');
+            grunt.fatal('stderr did not match');
+        }
+        if (code !== 117) {
+            console.error('Exit code did not match. Expected 117, got: ' + code + '.');
+            grunt.fatal('exit code did not match');
+        }
+    }
+
     grunt.loadTasks('tasks');
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -113,4 +154,6 @@ module.exports = function(grunt) {
     grunt.registerTask('killTask', ['shell:neverEndingTask', 'shell:curl', 'shell:neverEndingTask:kill']);
 
     grunt.registerTask('repeat', ['shell:echo', 'shell:echo']);
+
+    grunt.registerTask('testProcessAsync', ['shell:testProcessAsync', 'wait:2']);
 };

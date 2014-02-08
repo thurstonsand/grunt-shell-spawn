@@ -26,5 +26,23 @@ exports['grunt-shell-spawn'] = {
       shouldNotError(test, error, stderr);
       test.done();
     });
+  },
+
+  'Captures stdout, stderr, and exit code of synchronous process': function (test) {
+    test.expect(2);
+
+    exec('./node_modules/.bin/grunt shell:testProcessSync', function(error, stdout, stderr) {
+      shouldNotError(test, error, stderr);
+      test.done();
+    });
+  },
+
+  'Captures stdout, stderr, and exit code of async process': function (test) {
+    test.expect(2);
+
+    exec('./node_modules/.bin/grunt testProcessAsync', function(error, stdout, stderr) {
+      shouldNotError(test, error, stderr);
+      test.done();
+    });
   }
 };
