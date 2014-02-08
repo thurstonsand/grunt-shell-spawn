@@ -3,6 +3,9 @@
 var grunt = require('grunt');
 var fs = require('fs');
 var exec = require('child_process').exec;
+var path = require('path');
+
+var grunt = path.normalize('node_modules/.bin/grunt');
 
 var shouldNotError = function (test, error, stderr) {
   test.equal(error, null, 'Error: ' + error);
@@ -13,7 +16,7 @@ exports['grunt-shell-spawn'] = {
   defaultSync: function(test) {
     test.expect(2);
 
-    exec('./node_modules/.bin/grunt shell:defaultSync', function(error, stdout, stderr) {
+    exec(grunt + ' shell:defaultSync', function(error, stdout, stderr) {
       shouldNotError(test, error, stderr);
       test.done();
     });
@@ -22,7 +25,7 @@ exports['grunt-shell-spawn'] = {
   'Running a synchronous target twice': function(test) {
     test.expect(2);
 
-    exec('./node_modules/.bin/grunt repeat', function(error, stdout, stderr) {
+    exec(grunt + ' repeat', function(error, stdout, stderr) {
       shouldNotError(test, error, stderr);
       test.done();
     });
@@ -31,7 +34,7 @@ exports['grunt-shell-spawn'] = {
   'Captures stdout, stderr, and exit code of synchronous process': function (test) {
     test.expect(2);
 
-    exec('./node_modules/.bin/grunt shell:testProcessSync', function(error, stdout, stderr) {
+    exec(grunt + ' shell:testProcessSync', function(error, stdout, stderr) {
       shouldNotError(test, error, stderr);
       test.done();
     });
@@ -40,7 +43,7 @@ exports['grunt-shell-spawn'] = {
   'Captures stdout, stderr, and exit code of async process': function (test) {
     test.expect(2);
 
-    exec('./node_modules/.bin/grunt testProcessAsync', function(error, stdout, stderr) {
+    exec(grunt + ' testProcessAsync', function(error, stdout, stderr) {
       shouldNotError(test, error, stderr);
       test.done();
     });
