@@ -47,5 +47,14 @@ exports['grunt-shell-spawn'] = {
       shouldNotError(test, error, stderr);
       test.done();
     });
+  },
+
+  ':kill terminates the process': function (test) {
+    test.expect(2);
+
+    exec(grunt + ' killTest', function(error, stdout, stderr) {
+      shouldNotError(test, error, stderr);
+      test.done();
+    });
   }
 };

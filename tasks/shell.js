@@ -26,23 +26,35 @@ module.exports = function( grunt ) {
 
         grunt.verbose.writeflags(options, 'Options');
 
-        opts = _.defaults({}, options.execOptions);
+        // Set detached option to make it possible to kill the entire process group later
+        opts = _.defaults({}, options.execOptions, { detached: true });
 
         // Tests to see if user is trying to kill a running process
 
 
         var shouldKill = options.canKill && this.args.length === 1 && this.args[0] === 'kill';
         if (shouldKill) {
-            if (process.platform === 'win32') {
-                grunt.warn(":kill doesn't work as expected on Windows.");
-            }
 
             proc = procs[target];
             if (!proc) {
                 grunt.fatal('No running process for target:' + target);
             }
             grunt.verbose.writeln('Killing process for target: ' + target + ' (pid = ' + proc.pid + ')');
-            proc.kill('SIGKILL');
+
+            // Kill the process group. Note that the proc.pid represents the PID of the parent shell
+            // process (/bin/sh or cmd.exe). If we simply kill the parent process, the child
+            // processes will remain running (they will become orphaned). Methods for killing the
+            // entire process group vary by platform.
+            if (process.platform === 'win32') {
+                // TODO: Handle Windows
+                grunt.warn(':kill is not yet implemented on Windows.');
+            } else {
+                // Kill the entire process group by passing in a negative PID. Note this requires
+                // passing in a signal, and it also required us to launch the process with the
+                // option { detached: true }.
+                process.kill(-proc.pid, 'SIGKILL');
+            }
+
             delete procs[target];
             done();
             return;
@@ -118,7 +130,7 @@ module.exports = function( grunt ) {
                     stdErrString = stdErrBuf.toString('utf8', 0, stdErrPos);
 
                 options.callback.call(this, code, stdOutString, stdErrString, done);
-            } else if ( 0 !== code && options.failOnError ){
+            } else if (code && options.failOnError){
                 grunt.warn("Done, with errors.");
                 done();
             } else {

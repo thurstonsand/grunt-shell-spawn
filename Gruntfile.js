@@ -101,6 +101,7 @@ module.exports = function(grunt) {
                     async: false,
                     stdout: function(msg) {
                         if (msg !== 'success') {
+                            console.error('Expected `msg` to equal `success`');
                             grunt.fatal('Expected `msg` to equal `success`');
                         }
                     }
@@ -151,7 +152,14 @@ module.exports = function(grunt) {
         }, 1000 * seconds);
     });
 
-    grunt.registerTask('killTask', ['shell:neverEndingTask', 'shell:curl', 'shell:neverEndingTask:kill']);
+    // Test cases for the ':kill' task.
+    // killTask: neverEndingTask launches a server on port 1337, and shell:curl tests that the
+    //           server was launched successfully.
+    // killTest: Simply runs killTask twice. If the process was not killed successfully, then the
+    //           second time we attempt to launch the server, we would get an "address in use" error
+    //           indicating that the previous server is still running.
+    grunt.registerTask('killTask', ['shell:neverEndingTask', 'wait:2', 'shell:curl', 'shell:neverEndingTask:kill']);
+    grunt.registerTask('killTest', ['killTask', 'wait:1', 'killTask']);
 
     grunt.registerTask('repeat', ['shell:echo', 'shell:echo']);
 
