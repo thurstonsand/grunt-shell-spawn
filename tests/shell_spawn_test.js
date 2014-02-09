@@ -32,6 +32,13 @@ function runTestTask (task, test) {
 
 // Tests
 // -----
+//
+// Please note that if you want to see the error message in the output when running tests, you have
+// to print the error using console.error(). Whatever you pass to grunt.fatal() will not be visible
+// in the test output. Therefore, when you're writing a task for testing, you should both print the
+// error using console.error() so that the error is visible, and also call grunt.fatal() to stop the
+// task.
+
 exports['grunt-shell-spawn'] = {
 
   defaultSync: runTestTask.bind(null, 'shell:defaultSync'),
