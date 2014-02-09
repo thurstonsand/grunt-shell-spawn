@@ -5,56 +5,42 @@ var fs = require('fs');
 var exec = require('child_process').exec;
 var path = require('path');
 
+// Path to the grunt executable that should work cross-platform.
 var grunt = path.normalize('node_modules/.bin/grunt');
 
-var shouldNotError = function (test, error, stderr) {
+// Tests that there is no error reported in either the error object or in stderr.
+function shouldNotError (test, error, stderr) {
   test.equal(error, null, 'Error: ' + error);
   test.equal(stderr, '', 'Error: ' + stderr);
-};
+}
 
+/**
+ * Generic function for running a test task defined in the Gruntfile and making sure that it did
+ * not error out.
+ * @param {String} task The name of the task to run. The task should be defined in Gruntfile.js.
+ * @param {Object} test The nodeunit test object.
+ */
+function runTestTask (task, test) {
+  test.expect(2);
+
+  exec(grunt + ' ' + task, function(error, stdout, stderr) {
+    shouldNotError(test, error, stderr);
+    test.done();
+  });
+}
+
+
+// Tests
+// -----
 exports['grunt-shell-spawn'] = {
-  defaultSync: function(test) {
-    test.expect(2);
 
-    exec(grunt + ' shell:defaultSync', function(error, stdout, stderr) {
-      shouldNotError(test, error, stderr);
-      test.done();
-    });
-  },
+  defaultSync: runTestTask.bind(null, 'shell:defaultSync'),
 
-  'Running a synchronous target twice': function(test) {
-    test.expect(2);
+  'Running a synchronous target twice': runTestTask.bind(null, 'repeat'),
 
-    exec(grunt + ' repeat', function(error, stdout, stderr) {
-      shouldNotError(test, error, stderr);
-      test.done();
-    });
-  },
+  'Captures stdout, stderr, and exit code of synchronous process': runTestTask.bind(null, 'shell:testProcessSync'),
 
-  'Captures stdout, stderr, and exit code of synchronous process': function (test) {
-    test.expect(2);
+  'Captures stdout, stderr, and exit code of async process': runTestTask.bind(null, 'testProcessAsync'),
 
-    exec(grunt + ' shell:testProcessSync', function(error, stdout, stderr) {
-      shouldNotError(test, error, stderr);
-      test.done();
-    });
-  },
-
-  'Captures stdout, stderr, and exit code of async process': function (test) {
-    test.expect(2);
-
-    exec(grunt + ' testProcessAsync', function(error, stdout, stderr) {
-      shouldNotError(test, error, stderr);
-      test.done();
-    });
-  },
-
-  ':kill terminates the process': function (test) {
-    test.expect(2);
-
-    exec(grunt + ' killTest', function(error, stdout, stderr) {
-      shouldNotError(test, error, stderr);
-      test.done();
-    });
-  }
+  ':kill terminates the process': runTestTask.bind(null, 'killTest')
 };
