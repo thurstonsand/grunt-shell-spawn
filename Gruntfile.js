@@ -161,7 +161,9 @@ module.exports = function(grunt) {
     grunt.registerTask('killTask', ['shell:neverEndingTask', 'wait:2', 'shell:curl', 'shell:neverEndingTask:kill']);
     grunt.registerTask('killTest', ['killTask', 'wait:1', 'killTask']);
 
+    // Test case for allowing sequential runs of killable targets
     grunt.registerTask('repeat', ['shell:echo', 'shell:echo']);
 
+    // Test case for capturing stdout, stderr, and exit code of an async process
     grunt.registerTask('testProcessAsync', ['shell:testProcessAsync', 'wait:2']);
 };
