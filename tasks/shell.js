@@ -26,8 +26,8 @@ module.exports = function( grunt ) {
 
         grunt.verbose.writeflags(options, 'Options');
 
-        // Set detached option to make it possible to kill the entire process group later
-        opts = _.defaults({}, options.execOptions, { detached: true });
+        // On Unix, set detached option to make it possible to kill the entire process group later
+        opts = _.defaults({}, options.execOptions, { detached: (process.platform !== 'win32') });
 
         // Tests to see if user is trying to kill a running process
 
