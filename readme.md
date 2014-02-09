@@ -1,8 +1,22 @@
-# grunt-shell-spawn
+## sergkr/grunt-shell-spawn
 
-> A fork on [sindresorhus][1]'s [grunt-shell][2] ***with support for background processes***.
->  
-> *(e.g.: start a `compass watch` in the background)*
+A fork on [grunt-shell-spawn][1] with the following fixes:
+
+- Don't convert forward slashes to backslashes on Windows ([#12](https://github.com/cri5ti/grunt-shell-spawn/issues/12)).
+- Fix the broken `:kill` task to actually kill the process instead of orphaning it ([#14](https://github.com/cri5ti/grunt-shell-spawn/issues/14)), and add support for `:kill` on Windows.
+    - Caveat: it is now required to explicitly use `:kill` to clean up any background processes you started, as they will otherwise continue running after grunt finishes.
+- Fix for capturing `stderr` ([#15](https://github.com/cri5ti/grunt-shell-spawn/issues/15)).
+
+These are currently opened up as pull requests in grunt-shell-spawn, but until they are merged, you can point your package.json directly at this repository:
+
+    "devDependencies": {
+        "grunt-shell-spawn": "sergkr/grunt-shell-spawn#master"
+    }
+
+Or you may consider using the following alternatives:
+
+- [grunt.util.spawn](http://gruntjs.com/api/grunt.util#grunt.util.spawn)
+- [ShellJS](https://github.com/arturadib/shelljs)
 
 -----
 
@@ -104,7 +118,6 @@ MIT License
 (c) [Sindre Sorhus](http://sindresorhus.com)
 
 
-[1]: https://github.com/sindresorhus
-[2]: https://github.com/sindresorhus/grunt-shell
+[1]: https://github.com/sindresorhus/grunt-shell
 
 [cp_spawn]: http://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options
