@@ -61,7 +61,7 @@ module.exports = function( grunt ) {
                 // On Unix, we can kill the entire process group by passing in a negative PID. Note
                 // this requires passing in a signal, and it also required us to launch the process
                 // with the option { detached: true }.
-                process.kill(-proc.pid, 'SIGKILL');
+                process.kill(-proc.pid, 'SIGINT');
             }
 
             delete killable[target];
