@@ -21,10 +21,25 @@ module.exports = function( grunt ) {
         var proc;
 
         var options = this.options({stdout: true, stderr: true, failOnError: true, canKill: true});
+        grunt.log.write('\noptions\n');
+        for(var o in options) {
+          grunt.log.write(o, ',', options[o], '; ');
+        }
 
         var data = this.data;
+        grunt.log.write('\ndata\n');
+        for (var d in data) {
+          grunt.log.write(d, ',', data[d], '; ');
+        }
         var done = options.async ? function() {} : this.async();
         var target = this.target;
+        grunt.log.write('\ntarget: ', target, '\n');
+        
+        grunt.log.write('\nargs\n');
+        for (var a in this.args) {
+          grunt.log.write(a, ',', this.args[a], '; ');
+        }
+        
         var file, args, opts;
 
         grunt.verbose.writeflags(options, 'Options');
@@ -61,7 +76,7 @@ module.exports = function( grunt ) {
                 // On Unix, we can kill the entire process group by passing in a negative PID. Note
                 // this requires passing in a signal, and it also required us to launch the process
                 // with the option { detached: true }.
-                process.kill(-proc.pid, 'SIGINT');
+                process.kill(-proc.pid, 'SIGKILL');
             }
 
             delete killable[target];
